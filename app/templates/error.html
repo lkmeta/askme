@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Error {{ error_code }} - AskMe</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Your CSS -->
+    <link rel="stylesheet" href="/static/styles.css">
+    <!-- Favicon -->
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+    <!-- Add a unique ID to the container for error page -->
+    <div id="error-container">
+        <header>
+            <h1>
+                {% if error_code == 404 %}
+                <i class="fas fa-exclamation-triangle"></i> 404 - Page Not Found
+                {% elif error_code == 500 %}
+                <i class="fas fa-server"></i> 500 - Server Error
+                {% else %}
+                <i class="fas fa-ban"></i> {{ error_code }} - Error
+                {% endif %}
+            </h1>
+            <p>{{ error_message }}</p>
+        </header>
+        <main>
+            <!-- Change the ID to #error-content -->
+            <div id="error-content">
+                <p class="error-text">{{ error_detail }}</p>
+                <button onclick="window.location.href='/'">
+                    <i class="fas fa-home"></i> Back to Homepage
+                </button>
+            </div>
+        </main>
+        <footer>
+            <p>&copy; 2024 AskMe. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+
+</html>

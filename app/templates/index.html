@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AskMe - Intelligent FAQ</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Your CSS -->
+    <link rel="stylesheet" href="/static/styles.css">
+    <!-- Favicon -->
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>AskMe</h1>
+            <p>Your intelligent FAQ assistant.</p>
+        </header>
+        <main>
+            <form id="question-form">
+                <textarea id="question-input" name="question" placeholder="Type your question here..." required
+                    aria-label="Question input"></textarea>
+                <div class="button-group">
+                    <button type="submit" id="ask-button"><i class="fas fa-paper-plane"></i> Ask</button>
+                    <button type="button" id="clear-button"><i class="fas fa-eraser"></i> Clear</button>
+                </div>
+                <p id="error-message" class="error-message"></p>
+            </form>
+            <!-- Answer Container with Placeholder -->
+            <div id="answer-container">
+                <p class="placeholder-text">Your answer will appear here after you submit a question.</p>
+            </div>
+        </main>
+        <footer>
+            <p>&copy; 2024 AskMe. All rights reserved.</p>
+        </footer>
+    </div>
+    <!-- Your JavaScript -->
+    <script src="/static/main.js"></script>
+</body>
+
+</html>
