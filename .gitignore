@@ -1,0 +1,23 @@
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore virtual environments
+venv/
+.env
+
+# Ignore other unnecessary files
+.DS_Store
+
+# Ignore tests for now
+test.py
+# tests/
+
+# Data files
+data/vector_store/
+
+# Editor specific files
+.vscode/
+
+# Logs
+app/logs/
