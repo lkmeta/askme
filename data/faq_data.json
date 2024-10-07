@@ -1,0 +1,42 @@
+[
+    {
+        "question": "How can I update my username?",
+        "answer": "Go to your account settings, select 'Manage Username', enter your desired new username, and click 'Save Changes'."
+    },
+    {
+        "question": "What's the process for recovering a forgotten username?",
+        "answer": "On the login page, click 'Forgot Username', enter the email associated with your account, and follow the instructions sent to your email."
+    },
+    {
+        "question": "How do I switch to dark mode in the application?",
+        "answer": "In the application settings, look for 'Display Options'. Toggle the 'Dark Mode' switch to enable or disable it."
+    },
+    {
+        "question": "Is it possible to link multiple email addresses to my account?",
+        "answer": "Yes, in your profile settings, find 'Linked Emails', click 'Add Email', and follow the verification steps for each new email."
+    },
+    {
+        "question": "How can I export my user data from the platform?",
+        "answer": "Navigate to 'Privacy and Data' in your account settings, select 'Export Data', choose the data types you want, and click 'Generate Export'."
+    },
+    {
+        "question": "What are the requirements for creating a secure passphrase?",
+        "answer": "We recommend using a passphrase of at least 4 random words, totaling 20 characters or more. Avoid common phrases or quotes."
+    },
+    {
+        "question": "How do I enable biometric login for the mobile app?",
+        "answer": "Open the mobile app, go to 'Security Settings', and toggle on 'Enable Biometric Login'. Follow the prompts to set it up with your device."
+    },
+    {
+        "question": "What steps should I take to permanently delete my account?",
+        "answer": "Go to 'Account Management', select 'Delete Account', read through the implications, enter your password, and confirm deletion. This action cannot be undone."
+    },
+    {
+        "question": "What should I do if I suspect unauthorized access to my account?",
+        "answer": "Immediately log out of all sessions, change your password, and contact our security team through the 'Report Security Concern' form in the Help Center."
+    },
+    {
+        "question": "How can I manage the frequency of email digests I receive?",
+        "answer": "In your communication preferences, find 'Email Digest Settings', where you can adjust the frequency to daily, weekly, or monthly, or turn them off completely."
+    }
+]
