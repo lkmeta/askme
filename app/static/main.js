@@ -7,10 +7,22 @@ document.addEventListener('DOMContentLoaded', function () {
     const clearButton = document.getElementById('clear-button');
     const placeholderText = document.querySelector('.placeholder-text');
 
+    // Element for token input
+    const tokenInput = document.getElementById('token-input');
+
     form.addEventListener('submit', function (e) {
         e.preventDefault();
 
         const userQuestion = questionInput.value.trim();
+        const token = tokenInput.value.trim();
+
+        // Validate token
+        if (token === '') {
+            errorMessage.textContent = 'Please enter a valid token.';
+            errorMessage.style.display = 'block';
+            return;
+        }
+
         if (userQuestion === '') {
             errorMessage.textContent = 'Please enter a question.';
             errorMessage.style.display = 'block';
@@ -32,11 +44,22 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('/ask-question', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({ user_question: userQuestion })
         })
-            .then(response => response.json())
+            .then(response => {
+                // Check if the token is invalid
+                if (response.status === 403) {
+                    throw new Error('Invalid token provided.');
+                }
+                // Check if any other response errors
+                if (!response.ok) {
+                    throw new Error('An error occurred while fetching the answer.');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data && data.answer) {
                     displayResponse(data);
@@ -50,7 +73,12 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => {
                 console.error('Error:', error);
-                errorMessage.textContent = 'An error occurred while fetching the answer.';
+                // Display error message for invalid token
+                if (error.message === 'Invalid token provided.') {
+                    errorMessage.textContent = 'Invalid API token. Please check your token and try again.';
+                } else {
+                    errorMessage.textContent = error.message;
+                }
                 errorMessage.style.display = 'block';
                 askButton.disabled = false;
                 askButton.innerHTML = '<i class="fas fa-paper-plane"></i> Ask';
@@ -66,6 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     clearButton.addEventListener('click', function () {
         questionInput.value = '';
+        tokenInput.value = '';
         answerContainer.innerHTML = '<p class="placeholder-text">Your answer will appear here after you submit a question.</p>';
         errorMessage.style.display = 'none';
         questionInput.focus();

@@ -23,9 +23,10 @@ body {
     display: flex;
     flex-direction: column;
     width: 90%;
-    max-width: 700px;
+    max-width: 600px;
     margin: 0 auto;
     padding: 20px;
+    background-color: #fdf0d5;
 }
 
 /* Header Styling */
@@ -284,6 +285,7 @@ footer p {
     flex-direction: column;
     text-align: center;
     min-height: 100vh;
+    min-width: 100vw;
     margin: 0;
 }
 
@@ -315,4 +317,19 @@ footer p {
     color: #fff;
     transition: background-color 0.3s ease;
     margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 5px;
+}
+
+#token-input {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #003049;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    color: #003049;
+    margin-bottom: 15px;
 }

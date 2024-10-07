@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, HTTPException, status
+from fastapi import FastAPI, Request, HTTPException, status, Depends
 from fastapi.responses import JSONResponse, HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -10,6 +10,7 @@ from app.services.openai_client import openai_client
 from app.utils.logger import logger
 
 from pathlib import Path
+import os
 
 # Define base directories using pathlib for better path management
 BASE_DIR = Path(__file__).resolve().parent
@@ -41,9 +42,34 @@ embedding_service.load_vector_store()
 from app.services.similarity import similarity_service
 
 
+# Load the expected token from environment variables
+EXPECTED_TOKEN = os.getenv("API_TOKEN")
+
+
+def get_token(request: Request):
+    """
+    Dependency function to verify the token provided in request headers.
+    """
+    # Get the token from the request headers
+    token = request.headers.get("Authorization")
+
+    # If the token is missing or invalid, raise an HTTP 403 Forbidden error
+    if not token or token != f"Bearer {EXPECTED_TOKEN}":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid or missing token.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    # If token is valid, proceed with the request
+    return True
+
+
 # Route to serve favicon.ico for browsers
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
+    """
+    Route to serve favicon.ico for browsers
+    """
     return RedirectResponse(url="/static/favicon.ico")
 
 
@@ -62,9 +88,10 @@ async def read_root(request: Request):
 
 # POST endpoint to handle user questions
 @app.post("/ask-question", response_class=JSONResponse)
-async def ask_question(request: Request):
+async def ask_question(request: Request, token: bool = Depends(get_token)):
     """
     Process user questions, perform similarity search, and respond accordingly.
+    Requires a valid authentication token.
     """
     try:
         # Extract JSON data from the request
