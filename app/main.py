@@ -127,6 +127,13 @@ async def ask_question(
             status_code=500, detail="Internal Server Error during similarity search."
         )
 
+    # Make sure the similarity score and settings threshold are floats
+    # If not, convert them to floats
+    if not isinstance(similarity_score, float):
+        similarity_score = float(similarity_score)
+    if not isinstance(settings.SIMILARITY_THRESHOLD, float):
+        settings.SIMILARITY_THRESHOLD = float(settings.SIMILARITY_THRESHOLD)
+
     # Check similarity and decide response source
     if faq_entry is None or similarity_score < settings.SIMILARITY_THRESHOLD:
         # If no similar question found or similarity below threshold, forward to OpenAI API
