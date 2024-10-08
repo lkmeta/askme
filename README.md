@@ -30,7 +30,9 @@ An intelligent FAQ assistant that accurately answers user queries by matching th
 - [Installation](#installation)
 - [Usage](#usage)
 - [API Documentation](#api-documentation)
-- [FAQ Database](#faq-database)  
+- [FAQ Database](#faq-database)
+- [Monitoring](#monitoring)
+- [Testing](#testing)
 - [License](#license)
 
 ## About
@@ -150,6 +152,33 @@ To monitor the application and the services:
   docker-compose logs -f
   ```
 >  <sub>**Note:** The -f option follows the log output in real-time.</sub>
+
+## Testing
+
+To benchmark the performance of the AskMe application, you can use [Locust](https://locust.io/), a load-testing tool that helps simulate concurrent users sending requests to your API.
+
+The `locustfile.py` is located inside the `test` directory.
+
+### Steps to Run Locust Test
+
+1. **Install Locust**: If you don't have Locust installed, you can install it using pip (preferably within a virtual environment such as [python env](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/)):
+    ```bash
+    pip install locust
+    ```
+
+2. **Navigate to the Test Directory**: 
+    ```bash
+    cd test
+    ```
+
+3. **Run Locust**: Start Locust by running:
+    ```bash
+    locust -f locustfile.py
+    ```
+
+4. **Open Locust Web Interface**: Open your web browser and go to `http://localhost:8089`.
+
+5. **Start the Test**: Fill in the required fields (like the number of users) and set the Host to `http://localhost:8000` to begin testing the AskMe application.
 
 ## FAQ Database  
 The predefined set of FAQ questions and answers used to compute the embeddings is located in the file [`data/faq_data.json`](https://github.com/lkmeta/askme/blob/main/data/faq_data.json). You can update this file with additional FAQs to improve the system’s accuracy.
