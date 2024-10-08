@@ -7,6 +7,12 @@ load_dotenv()
 
 # Class to store configuration settings for the application
 class Settings:
+    POSTGRES_USER: str = os.getenv("POSTGRES_USER")
+    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD")
+    POSTGRES_HOST: str = os.getenv("POSTGRES_HOST")
+    POSTGRES_DB: str = os.getenv("POSTGRES_DB")
+    POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", 5432)
+
     # OpenAI API key, loaded from environment variables
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")
     # The model to be used for generating embeddings
