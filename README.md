@@ -30,9 +30,9 @@ An intelligent FAQ assistant that accurately answers user queries by matching th
 - [Installation](#installation)
 - [Usage](#usage)
 - [API Documentation](#api-documentation)
-- [FAQ Database](#faq-database)
 - [Monitoring](#monitoring)
 - [Testing](#testing)
+- [FAQ Database](#faq-database)
 - [License](#license)
 
 ## About
