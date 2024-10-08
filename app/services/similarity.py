@@ -1,55 +1,59 @@
-from app.services.embeddings import embedding_service
-from app.services.config import settings
 from app.utils.logger import logger
-from app.models.faq_entry import FAQEntry
+from app.services.config import settings
+from app.models import FAQ
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import text
+from app.services.embeddings import embedding_service
 
 
-# A service for finding the most similar question in the FAQ database
 class SimilarityService:
     def __init__(self):
-        # Initialization (no vector store set here; it's handled in embedding_service)
         pass
 
-    def find_most_similar(self, user_question: str):
+    async def find_most_similar(self, user_question: str, db: AsyncSession):
         """
-        Find the FAQ question that is most similar to the user's question.
+        Find the most similar question from the FAQ database using pgVector.
         """
         logger.info(f"Finding most similar question for: {user_question}")
 
-        vector_store = embedding_service.vector_store
-        if vector_store is None:
-            # If the vector store is not loaded, raise an error
-            logger.error("Vector store is not loaded.")
-            raise ValueError("Vector store is not loaded.")
+        # Generate the embedding for the user question using OpenAI
+        embedding = await embedding_service.compute_single_embedding(user_question)
 
-        # Perform a similarity search in the vector store for the user's question
-        results = vector_store.similarity_search_with_score(user_question, k=1)
-
-        # Check if results were found
-        if not results:
-            logger.error("No similar questions found.")
-            return None, 0.0
-
-        # Get the most similar document and its similarity score
-        similar_doc, similarity_score = results[0]
-
-        # Convert distance to similarity score (cosine similarity is 1 - distance)
-        similarity = 1 - similarity_score
-
-        logger.info(f"Similarity score: {similarity}")
-
-        # Reconstruct the FAQEntry object from the metadata
-        faq_entry_data = similar_doc.metadata["faq_entry"]
-        faq_entry = FAQEntry(**faq_entry_data)
-
-        return faq_entry, similarity
-
-    def is_similar(self, similarity_score: float) -> bool:
+        # SQL query to find the most similar FAQ based on embeddings
+        # (using the <=> operator for cosine similarity)
+        query = text(
+            """
+            SELECT id, question, answer, embedding <=> :embedding AS similarity_score
+            FROM faqs
+            ORDER BY similarity_score
+            LIMIT 1;
         """
-        Check if the similarity score meets or exceeds the defined threshold.
-        """
-        return similarity_score >= settings.SIMILARITY_THRESHOLD
+        )
+
+        try:
+            logger.info("Executing similarity search query...")
+            result = await db.execute(query, {"embedding": str(embedding)})
+            logger.info("Query executed successfully.")
+            row = result.fetchone()
+            logger.info(f"Row: {row}")
+
+            if row is None:
+                return None, 0.0
+
+            id, question, answer, similarity_score = row
+
+            logger.info(f"Found similar question: {question}")
+
+            faq_entry = {"question": question, "answer": answer}
+
+            # Calculate the cosine similarity score from the distance (1 - distance)
+            similarity_score = 1 - similarity_score
+
+            return faq_entry, similarity_score
+        except Exception as e:
+            logger.error(f"Error during similarity search: {e}")
+            raise
 
 
-# Instantiate the similarity service for use in other modules
+# Instantiate the similarity service
 similarity_service = SimilarityService()

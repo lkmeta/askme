@@ -3,11 +3,13 @@ from fastapi.responses import JSONResponse, HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from datetime import datetime
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.services.embeddings import embedding_service
 from app.services.config import settings
 from app.services.openai_client import openai_client
 from app.utils.logger import logger
+from app.db import get_db
+from app.services.similarity import similarity_service  # Import similarity service
 
 from pathlib import Path
 import os
@@ -35,13 +37,6 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 # Initialize Jinja2 templates for rendering HTML files
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
-# Load the vector store before using similarity_service to avoid errors during similarity search
-embedding_service.load_vector_store()
-
-# Import similarity_service after loading the vector store to avoid circular imports
-from app.services.similarity import similarity_service
-
-
 # Load the expected token from environment variables
 EXPECTED_TOKEN = os.getenv("API_TOKEN")
 
@@ -50,17 +45,13 @@ def get_token(request: Request):
     """
     Dependency function to verify the token provided in request headers.
     """
-    # Get the token from the request headers
     token = request.headers.get("Authorization")
-
-    # If the token is missing or invalid, raise an HTTP 403 Forbidden error
     if not token or token != f"Bearer {EXPECTED_TOKEN}":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Invalid or missing token.",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    # If token is valid, proceed with the request
     return True
 
 
@@ -88,19 +79,22 @@ async def read_root(request: Request):
 
 # POST endpoint to handle user questions
 @app.post("/ask-question", response_class=JSONResponse)
-async def ask_question(request: Request, token: bool = Depends(get_token)):
+async def ask_question(
+    request: Request,
+    token: bool = Depends(get_token),
+    db: AsyncSession = Depends(get_db),
+):
     """
     Process user questions, perform similarity search, and respond accordingly.
     Requires a valid authentication token.
     """
     try:
-        # Extract JSON data from the request
         data = await request.json()
     except Exception as e:
         logger.error(f"Invalid JSON payload: {e}")
         raise HTTPException(status_code=400, detail="Invalid JSON payload.")
 
-    user_question = data.get("user_question", "").strip()  # Extract and clean question
+    user_question = data.get("user_question", "").strip()
 
     if not user_question:
         logger.error("No question provided.")
@@ -110,9 +104,11 @@ async def ask_question(request: Request, token: bool = Depends(get_token)):
 
     # Find the most similar question from the FAQ
     try:
-        faq_entry, similarity_score = similarity_service.find_most_similar(
-            user_question
+        faq_entry, similarity_score = await similarity_service.find_most_similar(
+            user_question, db
         )
+
+        logger.info(f"Similarity score: {similarity_score}")
     except Exception as e:
         logger.error(f"Error during similarity search: {e}")
         raise HTTPException(
@@ -120,7 +116,7 @@ async def ask_question(request: Request, token: bool = Depends(get_token)):
         )
 
     # Check similarity and decide response source
-    if faq_entry is None or not similarity_service.is_similar(similarity_score):
+    if faq_entry is None or similarity_score < settings.SIMILARITY_THRESHOLD:
         # If no similar question found or similarity below threshold, forward to OpenAI API
         try:
             answer = openai_client.get_answer(user_question)
@@ -136,8 +132,8 @@ async def ask_question(request: Request, token: bool = Depends(get_token)):
         # Use the local FAQ answer
         response = {
             "source": "Local FAQ",
-            "matched_question": faq_entry.question,
-            "answer": faq_entry.answer,
+            "matched_question": faq_entry["question"],
+            "answer": faq_entry["answer"],
         }
         logger.info("Answer sourced from local FAQ database.")
 
