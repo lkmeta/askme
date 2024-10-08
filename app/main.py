@@ -41,6 +41,18 @@ templates = Jinja2Templates(directory=TEMPLATES_DIR)
 EXPECTED_TOKEN = os.getenv("API_TOKEN")
 
 
+@app.on_event("startup")
+async def startup_event():
+    """
+    Print some information about the application on startup.
+    """
+    logger.info("Starting up the application...")
+    logger.info(f"Similarity threshold: {settings.SIMILARITY_THRESHOLD}")
+    logger.info(f"Embeddings model: {settings.EMBEDDINGS_MODEL}")
+    logger.info(f"OpenAI API key present: {bool(settings.OPENAI_API_KEY)}")
+    logger.info("AskMe web application is ready.")
+
+
 def get_token(request: Request):
     """
     Dependency function to verify the token provided in request headers.
