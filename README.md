@@ -101,7 +101,7 @@ To install and run AskMe app using Docker, follow these steps:
 
 1. Clone the repository:
 ```sh
-git clone https://github.com/yourusername/askme.git
+git clone https://github.com/lkmeta/askme.git
 cd askme
 ```
 
