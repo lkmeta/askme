@@ -108,7 +108,7 @@ cd askme
 2. Set Up Environment Variables
 
   ```sh
-  cp .env.example .env
+  cp .env_example .env
   ```
 > <sub>Edit the .env file and add your API keys for OpenAI API, Authentication, and PostgreSQL necessary environment variables.    
 Additionally, you can configure the following parameters:</sub>  
