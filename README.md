@@ -17,6 +17,7 @@
   </p>
 </div>
 
+
 # AskMe
 An intelligent FAQ assistant that accurately answers user queries by matching them with semantically similar questions from a predefined [FAQ database](https://github.com/lkmeta/askme/blob/main/data/faq_data.json). When a close enough match isn't found, the system seamlessly interacts with the OpenAI API to generate the most relevant response.
 
@@ -38,6 +39,12 @@ An intelligent FAQ assistant that accurately answers user queries by matching th
 ## About
 
 AskMe is a web-based FAQ assistant powered by NLP models and PostgreSQL's `pgvector` for embedding similarity search. It provides users with precise answers by querying preloaded FAQs stored in a PostgreSQL database and can be extended using OpenAI's GPT models for more complex queries.
+
+
+<div align="center">
+  <img src="https://github.com/lkmeta/askme/blob/main/app/static/AskMe%20Gif.gif" alt="AskMe Gif" width="600"/>
+</div>
+
 
 ## Features
 
